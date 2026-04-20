@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Exercise 20</title>
+  <style>
+
+    body {
+      background-color: #d6d6d6;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Wide white fixed box */
+    .content-box {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      background-color: #ffffff;
+      padding: 20px;
+      min-height: 220px;
+    }
+
+    /* Table styling */
+    table {
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 6px 20px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #b0b0b0;
+      font-weight: bold;
+    }
+
+    tbody tr:nth-child(odd) td {
+      background-color: yellow;
+    }
+
+    tbody tr:nth-child(even) td {
+      background-color: #ffffff;
+    }
+
+    /* Fixed green div - top right of viewport */
+    .fixed-div {
+      position: fixed;
+      top: 40px;
+      right: 60px;
+      border: 3px solid green;
+      padding: 10px 14px;
+      background-color: white;
+      font-size: 14px;
+      width: 130px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Wide white box fixed to viewport -->
+  <div class="content-box">
+    <table>
+      <thead>
+        <tr>
+          <th>Firstname</th>
+          <th>Lastname</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>3</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Green fixed div on the right -->
+  <div class="fixed-div">
+    This div element has position: fixed;
+  </div>
+
+</body>
+</html>
