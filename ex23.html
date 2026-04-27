@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Detail Viewer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --btn-border: #2f2f2f;
+      --btn-text:   #2f2f2f;
+      --btn-bg:     #ffffff;
+      --btn-h:      22px;
+      --btn-r:      8px;
+      --hl-a:       #8bc34a;
+      --hl-b:       #6da032;
+      --panel-bg:   rgba(255,255,255,0.97);
+      --shadow:     0 8px 40px rgba(0,0,0,0.18);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Full-screen layout ── */
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Figtree', sans-serif;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Background image fills the whole screen ── */
+    .bg-image {
+      position: fixed;
+      inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80');
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.72);
+      z-index: 0;
+      transition: filter 0.5s ease;
+    }
+
+    .bg-image.dimmed { filter: brightness(0.45); }
+
+    /* ── Top toolbar ── */
+    .toolbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 28px 0;
+    }
+
+    .toolbar-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── THE spec button: h22 / R8 / #fff / 1px #2f2f2f / Figtree 13px ── */
+    .detail-button {
+      height: var(--btn-h);           /* height: 22px  */
+      padding: 0 14px;
+      border: 1px solid var(--btn-border); /* outline 1px #2f2f2f */
+      border-radius: var(--btn-r);         /* radius: 8px */
+      background: var(--btn-bg);           /* bg: #ffffff */
+      color: var(--btn-text);              /* color: #2f2f2f */
+      font-family: 'Figtree', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.15s, box-shadow 0.15s;
+      white-space: nowrap;
+    }
+
+    .detail-button:hover  { background: #f2f2f2; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .detail-button:active { transform: translateY(1px); }
+
+    .chevron {
+      transition: transform 0.28s ease;
+    }
+    .detail-button.open .chevron {
+      transform: rotate(180deg);
+    }
+
+    /* ── Centre hero area ── */
+    .hero {
+      position: relative;
+      z-index: 5;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+    }
+
+    /* ── Image card (450×240 per spec, centred) ── */
+    .image-card {
+      width: 450px;
+      height: 240px;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .image-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .image-card .img-label {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 6px 10px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.55));
+      color: #fff;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Info panel — slides down below card ── */
+    .info-panel {
+      width: 450px;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1),
+                  opacity    0.28s ease;
+      border-radius: 0 0 6px 6px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .info-panel.visible {
+      max-height: 320px;
+      opacity: 1;
+    }
+
+    .info-inner {
+      background: var(--panel-bg);
+      max-height: 260px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #bbb #f5f5f5;
+    }
+
+    .info-inner::-webkit-scrollbar       { width: 5px; }
+    .info-inner::-webkit-scrollbar-track { background: #f5f5f5; }
+    .info-inner::-webkit-scrollbar-thumb { background: #bbb; border-radius: 3px; }
+
+    /* rows */
+    .info-row {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      min-height: 26px;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .info-row:last-child { border-bottom: none; }
+
+    .info-row.hl  { background: var(--hl-a); color: #fff; }
+    .info-row.hld { background: var(--hl-b); color: #fff; }
+
+    .info-row .key {
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border-right: 1px solid rgba(0,0,0,0.07);
+      display: flex;
+      align-items: center;
+    }
+
+    .info-row .val {
+      padding: 5px 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      word-break: break-all;
+      line-height: 1.4;
+      color: inherit;
+    }
+
+    /* bottom strip */
+    .panel-footer {
+      background: #f8f8f8;
+      border-top: 1px solid #e8e8e8;
+      padding: 6px 10px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .hide-btn {
+      height: var(--btn-h);
+      padding: 0 14px;
+      border: 1px solid var(--btn-border);
+      border-radius: var(--btn-r);
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      font-family: 'Figtree', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .hide-btn:hover { background: #efefef; }
+
+    /* ── Bottom caption bar ── */
+    .caption-bar {
+      position: relative;
+      z-index: 10;
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .caption-bar .file-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.04em;
+    }
+
+    .caption-bar .file-size {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ── Spec badge (learning context) ── */
+    .spec-badge {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.65);
+      color: rgba(255,255,255,0.65);
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+      pointer-events: none;
+      z-index: 20;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Full-screen background -->
+  <div class="bg-image" id="bgImage"></div>
+
+  <!-- Top toolbar -->
+  <div class="toolbar">
+    <span class="toolbar-title">Image Viewer</span>
+    <button class="detail-button" id="detailButton" type="button" aria-expanded="false">
+      View Details
+      <svg class="chevron" width="10" height="10" viewBox="0 0 10 10" fill="none">
+        <path d="M2 3.5L5 6.5L8 3.5" stroke="#2f2f2f" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Hero: image card + info panel -->
+  <div class="hero">
+    <div class="image-card">
+      <img
+        src="https://images.unsplash.com/photo-1444464666168-49d633b86797?w=900&q=80"
+        alt="Mountain lake landscape"
+      />
+      <div class="img-label">Preview Image Thumbnail &nbsp;·&nbsp; 450 × 240</div>
+    </div>
+
+    <!-- Info panel (hidden by default) -->
+    <div class="info-panel" id="infoPanel" aria-hidden="true">
+      <div class="info-inner">
+        <div class="info-row hl">
+          <span class="key">Date Taken</span>
+          <span class="val">2017 / 10 / 12</span>
+        </div>
+        <div class="info-row hld">
+          <span class="key">Type</span>
+          <span class="val">JPG</span>
+        </div>
+        <div class="info-row hl">
+          <span class="key">File Size</span>
+          <span class="val">466.97 KB</span>
+        </div>
+        <div class="info-row hld">
+          <span class="key">File Path</span>
+          <span class="val">\\designcenter.qnap.com.tw\DesignCenter\PM\WEB\Solutions\A_Image2PDFv2\sample</span>
+        </div>
+        <div class="info-row">
+          <span class="key">Format</span>
+          <span class="val">JPEG / RGB</span>
+        </div>
+        <div class="info-row">
+          <span class="key">Resolution</span>
+          <span class="val">72 dpi</span>
+        </div>
+        <div class="info-row">
+          <span class="key">Color Space</span>
+          <span class="val">sRGB IEC61966-2.1</span>
+        </div>
+        <div class="info-row">
+          <span class="key">Dimensions</span>
+          <span class="val">450 × 240 px</span>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button class="hide-btn" id="hideBtn" type="button">Hide Details</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom caption -->
+  <div class="caption-bar">
+    <span class="file-name">20171012_mountain_lake.jpg</span>
+    <span class="file-size">466.97 KB</span>
+  </div>
+
+  <!-- Spec badge -->
+  <div class="spec-badge">
+    Button spec → h: 22px · radius: 8px · bg: #fff · border: 1px #2f2f2f · Figtree 13px
+  </div>
+
+<script>
+  const detailBtn = document.getElementById('detailButton');
+  const hideBtn   = document.getElementById('hideBtn');
+  const panel     = document.getElementById('infoPanel');
+  const bg        = document.getElementById('bgImage');
+  let isOpen = false;
+
+  function open() {
+    isOpen = true;
+    panel.classList.add('visible');
+    panel.setAttribute('aria-hidden', 'false');
+    detailBtn.classList.add('open');
+    detailBtn.setAttribute('aria-expanded', 'true');
+    detailBtn.innerHTML = `Hide Details
+      <svg class="chevron" width="10" height="10" viewBox="0 0 10 10" fill="none">
+        <path d="M2 3.5L5 6.5L8 3.5" stroke="#2f2f2f" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+    bg.classList.add('dimmed');
+  }
+
+  function close() {
+    isOpen = false;
+    panel.classList.remove('visible');
+    panel.setAttribute('aria-hidden', 'true');
+    detailBtn.classList.remove('open');
+    detailBtn.setAttribute('aria-expanded', 'false');
+    detailBtn.innerHTML = `View Details
+      <svg class="chevron" width="10" height="10" viewBox="0 0 10 10" fill="none">
+        <path d="M2 3.5L5 6.5L8 3.5" stroke="#2f2f2f" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+    bg.classList.remove('dimmed');
+  }
+
+  detailBtn.addEventListener('click', () => isOpen ? close() : open());
+  hideBtn.addEventListener('click', close);
+</script>
+</body>
+</html>
