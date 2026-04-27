@@ -1,147 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Responsive Layout Exercise</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Layout</title>
   <style>
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: #5bc8e8;   /* light blue outer background */
-      padding: 20px;
-      font-family: Arial, sans-serif;
+      background: #4ab8e8;
       min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
 
-    /* ── White card container ── */
     .container {
-      background: #ffffff;
-      padding: 12px;
-      border-radius: 4px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    /* ══════════════════════════════════════
-       COLOUR BLOCKS
-    ══════════════════════════════════════ */
-    .green  { background: #8dc63f; }   /* lime green */
-    .teal   { background: #29abe2; }   /* teal / cyan */
-    .grey   { background: #d1d3d4; }   /* light grey */
-
-    /* ══════════════════════════════════════
-       MOBILE LAYOUT  (default — below 480px)
-       Single column, everything stacks
-    ══════════════════════════════════════ */
-
-    /* Green banner — full width */
-    .green-banner {
+      background: white;
+      border-radius: 10px;
+      padding: 14px;
       width: 100%;
-      height: 80px;
-      margin-bottom: 8px;
-      border-radius: 3px;
-    }
-
-    /* Teal rows — 4 full-width stacked rows */
-    .teal-grid {
+      max-width: 660px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-bottom: 8px;
+      gap: 10px;
     }
 
-    .teal-grid .teal {
+    /* === GREEN BANNER === */
+    .green {
+      background: #8dc63f;
+      border-radius: 6px;
+      height: 100px;
       width: 100%;
-      height: 36px;
-      border-radius: 3px;
     }
 
-    /* Grey boxes — 3 small boxes in a row */
-    .grey-row {
-      display: flex;
-      flex-direction: row;
+    /* === TEAL SECTION (Layout B) ===
+       Left tall column + two smaller top-right + one wide bottom-right */
+    .teal-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 90px 60px;
       gap: 8px;
     }
-
-    .grey-row .grey {
-      flex: 1;
-      height: 36px;
-      border-radius: 3px;
+    .teal-section .t1 {
+      background: #00bcd4;
+      border-radius: 6px;
+      grid-column: 1;
+      grid-row: 1 / 3;
+    }
+    .teal-section .t2 {
+      background: #00bcd4;
+      border-radius: 6px;
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .teal-section .t3 {
+      background: #00bcd4;
+      border-radius: 6px;
+      grid-column: 3;
+      grid-row: 1;
+    }
+    .teal-section .t4 {
+      background: #00bcd4;
+      border-radius: 6px;
+      grid-column: 2 / 4;
+      grid-row: 2;
     }
 
-    /* ══════════════════════════════════════
-       DESKTOP LAYOUT  (480px and above)
-       Grid: green full width top,
-             teal in 2x2 grid,
-             grey in a row below
-    ══════════════════════════════════════ */
-    @media only screen and (min-width: 480px) {
-
-      /* Green banner stays full width */
-      .green-banner {
-        height: 100px;
-        margin-bottom: 10px;
-      }
-
-      /* Teal grid becomes 2 columns, 2 rows */
-      .teal-grid {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 10px;
-      }
-
-      .teal-grid .teal {
-        /* each teal box takes up roughly half the width minus the gap */
-        width: calc(50% - 5px);
-        height: 80px;
-        flex: none;
-      }
-
-      /* Grey row stays as a row — boxes get a bit taller */
-      .grey-row {
-        gap: 10px;
-      }
-
-      .grey-row .grey {
-        height: 50px;
-      }
-
+    /* === GREY SECTION (Layout B): 4 equal columns === */
+    .grey-section {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .grey-section .g {
+      background: #cfd8dc;
+      border-radius: 6px;
+      height: 50px;
     }
 
+    /* ============================= */
+    /* === LAYOUT A  (< 480px)  === */
+    /* ============================= */
+    @media (max-width: 479px) {
+
+      /* Teal: 4 full-width stacked rows */
+      .teal-section {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .teal-section .t1,
+      .teal-section .t2,
+      .teal-section .t3,
+      .teal-section .t4 {
+        height: 40px;
+        grid-column: unset;
+        grid-row: unset;
+      }
+
+      /* Grey: 2 columns × 2 rows */
+      .grey-section {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
   </style>
 </head>
 <body>
-
   <div class="container">
 
-    <!-- Green top banner -->
-    <div class="green-banner green"></div>
+    <!-- Green banner -->
+    <div class="green"></div>
 
-    <!-- Teal blocks:
-         Mobile  → 4 stacked full-width rows
-         Desktop → 2x2 grid -->
-    <div class="teal-grid">
-      <div class="teal"></div>
-      <div class="teal"></div>
-      <div class="teal"></div>
-      <div class="teal"></div>
+    <!-- Teal section -->
+    <div class="teal-section">
+      <div class="t1"></div>
+      <div class="t2"></div>
+      <div class="t3"></div>
+      <div class="t4"></div>
     </div>
 
-    <!-- Grey small boxes — always a row -->
-    <div class="grey-row">
-      <div class="grey"></div>
-      <div class="grey"></div>
-      <div class="grey"></div>
+    <!-- Grey section -->
+    <div class="grey-section">
+      <div class="g"></div>
+      <div class="g"></div>
+      <div class="g"></div>
+      <div class="g"></div>
     </div>
 
   </div>
-
 </body>
 </html>
