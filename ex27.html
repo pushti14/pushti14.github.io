@@ -4,116 +4,124 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Responsive Layout</title>
+
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+    }
 
     body {
-      background: #4ab8e8;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+      background-color: #55b7f0;
+      padding: 35px 25px;
+      font-family: Arial, sans-serif;
     }
 
-    .container {
-      background: white;
-      border-radius: 10px;
-      padding: 16px;
+    .wrapper {
       width: 100%;
-      max-width: 680px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      max-width: 720px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: 12px;
+      padding: 16px;
     }
 
-    /* ── GREEN BANNER ── */
-    .green {
-      background: #8dc63f;
-      border-radius: 6px;
-      height: 110px;
-    }
-
-    /* ── TEAL SECTION ──
-       Layout B (≥480px): 3 equal vertical columns, same height */
-    .teal-section {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+    .header {
+      width: 100%;
       height: 150px;
-    }
-    .teal-section .t {
-      background: #00bcd4;
-      border-radius: 6px;
+      background-color: #b4df3e;
+      margin-bottom: 10px;
     }
 
-    /* ── GREY SECTION ──
-       Layout B (≥480px): 3 equal boxes in a row */
-    .grey-section {
+    .main {
+      width: 100%;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-    .grey-section .g {
-      background: #cfd8dc;
-      border-radius: 6px;
-      height: 55px;
+      gap: 8px;
+      margin-bottom: 10px;
     }
 
-    /* ══════════════════════════════
-       LAYOUT A  —  width < 480px
-    ══════════════════════════════ */
-    @media (max-width: 479px) {
+    .main div {
+      height: 165px;
+      background-color: #12bdc7;
+    }
 
-      /* Teal: 4 full-width stacked rows */
-      .teal-section {
+    .footer {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .footer div {
+      height: 90px;
+      background-color: #e8f0f2;
+    }
+
+    /* Mobile view: less than 480px */
+    @media screen and (max-width: 480px) {
+      body {
+        padding: 55px 28px;
+      }
+
+      .wrapper {
+        max-width: 100%;
+        padding: 14px;
+        border-radius: 10px;
+      }
+
+      .header {
+        height: 125px;
+        margin-bottom: 8px;
+      }
+
+      .main {
+        display: grid;
         grid-template-columns: 1fr;
-        height: auto;
-        gap: 8px;
+        gap: 6px;
+        margin-bottom: 8px;
       }
-      .teal-section .t {
-        height: 40px;
-      }
-      /* show 4th teal row on mobile */
-      .teal-section .t4 { display: block; }
 
-      /* Grey: 2 columns × 2 rows (4 boxes) */
-      .grey-section {
+      .main div {
+        width: 100%;
+        height: 70px;
+        display: block;
+      }
+
+      .footer {
+        display: grid;
         grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
       }
-      /* show 4th grey box on mobile */
-      .grey-section .g4 { display: block; }
-    }
 
-    /* hide the extra mobile-only cells on desktop */
-    @media (min-width: 480px) {
-      .teal-section .t4 { display: none; }
-      .grey-section .g4 { display: none; }
+      .footer div {
+        height: 48px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="wrapper">
+    <div class="header"></div>
 
-    <!-- Green banner -->
-    <div class="green"></div>
-
-    <!-- Teal section -->
-    <div class="teal-section">
-      <div class="t"></div>
-      <div class="t"></div>
-      <div class="t"></div>
-      <div class="t t4"></div><!-- 4th row, mobile only -->
+    <div class="main">
+      <div></div>
+      <div></div>
+      <div></div>
     </div>
 
-    <!-- Grey section -->
-    <div class="grey-section">
-      <div class="g"></div>
-      <div class="g"></div>
-      <div class="g"></div>
-      <div class="g g4"></div><!-- 4th box, mobile only -->
+    <div class="footer">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
     </div>
-
   </div>
 </body>
 </html>
