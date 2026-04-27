@@ -13,97 +13,82 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 24px;
     }
 
     .container {
       background: white;
       border-radius: 10px;
-      padding: 14px;
+      padding: 16px;
       width: 100%;
-      max-width: 660px;
+      max-width: 680px;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
-    /* === GREEN BANNER === */
+    /* ── GREEN BANNER ── */
     .green {
       background: #8dc63f;
       border-radius: 6px;
-      height: 100px;
-      width: 100%;
+      height: 110px;
     }
 
-    /* === TEAL SECTION (Layout B) ===
-       Left tall column + two smaller top-right + one wide bottom-right */
+    /* ── TEAL SECTION ──
+       Layout B (≥480px): 3 equal vertical columns, same height */
     .teal-section {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-template-rows: 90px 60px;
-      gap: 8px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      height: 150px;
     }
-    .teal-section .t1 {
+    .teal-section .t {
       background: #00bcd4;
       border-radius: 6px;
-      grid-column: 1;
-      grid-row: 1 / 3;
-    }
-    .teal-section .t2 {
-      background: #00bcd4;
-      border-radius: 6px;
-      grid-column: 2;
-      grid-row: 1;
-    }
-    .teal-section .t3 {
-      background: #00bcd4;
-      border-radius: 6px;
-      grid-column: 3;
-      grid-row: 1;
-    }
-    .teal-section .t4 {
-      background: #00bcd4;
-      border-radius: 6px;
-      grid-column: 2 / 4;
-      grid-row: 2;
     }
 
-    /* === GREY SECTION (Layout B): 4 equal columns === */
+    /* ── GREY SECTION ──
+       Layout B (≥480px): 3 equal boxes in a row */
     .grey-section {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
     }
     .grey-section .g {
       background: #cfd8dc;
       border-radius: 6px;
-      height: 50px;
+      height: 55px;
     }
 
-    /* ============================= */
-    /* === LAYOUT A  (< 480px)  === */
-    /* ============================= */
+    /* ══════════════════════════════
+       LAYOUT A  —  width < 480px
+    ══════════════════════════════ */
     @media (max-width: 479px) {
 
       /* Teal: 4 full-width stacked rows */
       .teal-section {
-        display: flex;
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        height: auto;
         gap: 8px;
       }
-      .teal-section .t1,
-      .teal-section .t2,
-      .teal-section .t3,
-      .teal-section .t4 {
+      .teal-section .t {
         height: 40px;
-        grid-column: unset;
-        grid-row: unset;
       }
+      /* show 4th teal row on mobile */
+      .teal-section .t4 { display: block; }
 
-      /* Grey: 2 columns × 2 rows */
+      /* Grey: 2 columns × 2 rows (4 boxes) */
       .grey-section {
         grid-template-columns: repeat(2, 1fr);
       }
+      /* show 4th grey box on mobile */
+      .grey-section .g4 { display: block; }
+    }
+
+    /* hide the extra mobile-only cells on desktop */
+    @media (min-width: 480px) {
+      .teal-section .t4 { display: none; }
+      .grey-section .g4 { display: none; }
     }
   </style>
 </head>
@@ -115,10 +100,10 @@
 
     <!-- Teal section -->
     <div class="teal-section">
-      <div class="t1"></div>
-      <div class="t2"></div>
-      <div class="t3"></div>
-      <div class="t4"></div>
+      <div class="t"></div>
+      <div class="t"></div>
+      <div class="t"></div>
+      <div class="t t4"></div><!-- 4th row, mobile only -->
     </div>
 
     <!-- Grey section -->
@@ -126,7 +111,7 @@
       <div class="g"></div>
       <div class="g"></div>
       <div class="g"></div>
-      <div class="g"></div>
+      <div class="g g4"></div><!-- 4th box, mobile only -->
     </div>
 
   </div>
