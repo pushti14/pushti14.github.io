@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Image Styling Exercise</title>
+  <style>
+    body {
+      margin: 40px;
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+    }
+    h2 {
+      font-size: 15px;
+      margin-bottom: 32px;
+      line-height: 1.6;
+      color: #333;
+    }
+    /* ── Outer wrapper: positions the circle absolutely over the gap ── */
+    .image-row {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 0;
+    }
+    /* ────────────────────────────────────────
+       IMAGE 1 — width 33%, radius 18px, no distortion
+    ──────────────────────────────────────── */
+    .img-left {
+      width: 33%;
+      height: auto;           /* no distortion — height scales naturally */
+      border-radius: 18px;
+      display: block;
+      flex-shrink: 0;
+    }
+    /* ────────────────────────────────────────
+       IMAGE 3 — width 33%, height 300px, WITH distortion
+    ──────────────────────────────────────── */
+    .img-right {
+      width: 33%;
+      height: 300px;          /* fixed height forces distortion */
+      display: block;
+      flex-shrink: 0;
+      margin-left: auto;      /* push to right side */
+    }
+    /* ── Spacer in the middle so images don't touch ── */
+    .middle-gap {
+      flex: 1;
+    }
+    /* ────────────────────────────────────────
+       IMAGE 2 — circle 150px, overlapping the centre
+       Absolutely positioned so it floats over both images
+    ──────────────────────────────────────── */
+    .img-circle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);   /* perfectly centred */
+      width: 150px;           /* 150px diameter */
+      height: 150px;
+      border-radius: 50%;     /* makes wrapper a circle */
+      border: 1px solid #555; /* thin dark border */
+      padding: 5px;           /* gap between image and border */
+      background: #fff;       /* white fills the gap */
+      overflow: visible;      /* let padding show outside */
+      z-index: 10;            /* sits on top of both images */
+      flex-shrink: 0;
+    }
+    .img-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;      /* fill circle with no distortion */
+      display: block;
+      border-radius: 50%;     /* clips the image itself into a circle */
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="image-row">
+    <!-- Left: width 33%, radius 18px, no distortion -->
+    <img
+      class="img-left"
+      src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=600&q=80"
+      alt="Eiffel Tower – no distortion"
+    />
+    <!-- Spacer so the circle has a gap to float over -->
+    <div class="middle-gap"></div>
+    <!-- Right: width 33%, height 300px, distortion -->
+    <img
+      class="img-right"
+      src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=600&q=80"
+      alt="Eiffel Tower – distorted"
+    />
+    <!-- Circle: absolutely centred, overlapping both images -->
+    <div class="img-circle">
+      <img
+        src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80"
+        alt="Mountain aerial view"
+      />
+    </div>
+  </div>
+</body>
+</html>
