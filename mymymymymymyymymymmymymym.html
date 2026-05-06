@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pushti Mer</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;500;700;800&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0A0A0A;
+  --fg:#F0EDE6;
+  --pink:#FF4D8D;
+  --yellow:#F5E642;
+  --mint:#3DFFC0;
+  --dim:#3A3A3A;
+  --muted:#888;
+}
+html{scroll-behavior:smooth;overflow-x:hidden;}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:'Syne',sans-serif;
+  cursor:none;
+  overflow-x:hidden;
+}
+
+/* NOISE OVERLAY */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity:0.035;
+  pointer-events:none;
+  z-index:9997;
+}
+
+/* CURSOR */
+#cur{
+  width:10px;height:10px;
+  background:var(--pink);
+  border-radius:50%;
+  position:fixed;
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .2s,height .2s,background .2s;
+  mix-blend-mode:exclusion;
+}
+#cur-ring{
+  width:40px;height:40px;
+  border:1px solid rgba(240,237,230,0.4);
+  border-radius:50%;
+  position:fixed;
+  pointer-events:none;
+  z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:transform .08s ease,width .3s,height .3s,border-color .3s;
+}
+body:has(a:hover) #cur{width:60px;height:60px;background:var(--yellow);}
+body:has(a:hover) #cur-ring{opacity:0;}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:200;
+  padding:1.5rem 3rem;
+  display:flex;justify-content:space-between;align-items:center;
+  mix-blend-mode:difference;
+}
+.nav-name{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.6rem;
+  letter-spacing:.08em;
+  color:#fff;
+  text-decoration:none;
+}
+nav ul{list-style:none;display:flex;gap:2rem;}
+nav ul a{
+  color:#fff;
+  text-decoration:none;
+  font-size:.72rem;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  font-weight:500;
+}
+
+/* HERO */
+#hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding:0 3rem 4rem;
+  position:relative;
+  overflow:hidden;
+}
+.hero-giant{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(7rem,18vw,18rem);
+  line-height:.88;
+  letter-spacing:-.01em;
+  color:var(--fg);
+  position:relative;
+  z-index:2;
+  user-select:none;
+}
+.hero-giant .outline{
+  -webkit-text-stroke:1px var(--fg);
+  color:transparent;
+}
+.hero-giant .pink{color:var(--pink);}
+
+.hero-top-bar{
+  position:absolute;top:50%;left:3rem;right:3rem;
+  display:flex;justify-content:space-between;align-items:center;
+  transform:translateY(-50%);
+  z-index:2;
+}
+.hero-role{
+  font-size:.72rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--muted);
+  border:1px solid var(--dim);
+  padding:.5rem 1rem;
+  border-radius:100px;
+}
+.hero-scroll{
+  font-family:'Space Mono',monospace;
+  font-size:.65rem;
+  color:var(--muted);
+  letter-spacing:.1em;
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  text-transform:uppercase;
+}
+.hero-scroll-line{
+  width:1px;height:60px;
+  background:linear-gradient(to bottom,var(--pink),transparent);
+  animation:scrollPulse 2s infinite;
+}
+@keyframes scrollPulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+.hero-desc{
+  position:absolute;bottom:5rem;right:3rem;
+  max-width:280px;
+  font-size:.88rem;
+  line-height:1.7;
+  color:var(--muted);
+  text-align:right;
+  z-index:2;
+}
+.hero-desc strong{color:var(--fg);font-weight:500;}
+
+.hero-blob{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(120px);
+  opacity:.12;
+  pointer-events:none;
+  animation:blobFloat 8s ease-in-out infinite;
+}
+.blob1{width:700px;height:700px;background:var(--pink);top:-200px;right:-200px;}
+.blob2{width:400px;height:400px;background:var(--yellow);bottom:-100px;left:100px;animation-delay:3s;}
+@keyframes blobFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-40px)}}
+
+/* MARQUEE */
+.marquee-wrap{
+  overflow:hidden;
+  border-top:1px solid var(--dim);
+  border-bottom:1px solid var(--dim);
+  padding:.8rem 0;
+  background:var(--bg);
+}
+.marquee-track{
+  display:flex;
+  gap:3rem;
+  white-space:nowrap;
+  animation:marqueeScroll 22s linear infinite;
+}
+.marquee-track span{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.1rem;
+  letter-spacing:.12em;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+.marquee-track span.hi{color:var(--pink);}
+@keyframes marqueeScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* SECTIONS */
+section{padding:8rem 3rem;}
+
+.s-label{
+  font-family:'Space Mono',monospace;
+  font-size:.65rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--pink);
+  margin-bottom:1.5rem;
+  display:flex;align-items:center;gap:.75rem;
+}
+.s-label::after{content:'';flex:0 0 40px;height:1px;background:var(--pink);}
+
+.s-title{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(2.5rem,5vw,4.5rem);
+  line-height:1.1;
+  font-weight:400;
+  margin-bottom:4rem;
+  color:var(--fg);
+}
+.s-title em{font-style:italic;color:var(--pink);}
+
+/* EDUCATION */
+#education{background:#0D0D0D;}
+.edu-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:1px;
+  border:1px solid var(--dim);
+}
+.edu-cell{
+  padding:2.5rem;
+  border-right:1px solid var(--dim);
+  position:relative;
+  transition:background .3s;
+}
+.edu-cell:last-child{border-right:none;}
+.edu-cell:hover{background:rgba(255,77,141,.05);}
+.edu-cell::before{
+  content:attr(data-year);
+  font-family:'Bebas Neue',sans-serif;
+  font-size:4rem;
+  color:rgba(255,255,255,.04);
+  position:absolute;top:1rem;right:1rem;
+  line-height:1;
+  pointer-events:none;
+}
+.edu-tag{
+  display:inline-block;
+  font-family:'Space Mono',monospace;
+  font-size:.6rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--yellow);
+  border:1px solid var(--yellow);
+  padding:.25rem .6rem;
+  border-radius:3px;
+  margin-bottom:1rem;
+}
+.edu-deg{
+  font-family:'DM Serif Display',serif;
+  font-size:1.15rem;
+  color:var(--fg);
+  margin-bottom:.4rem;
+  line-height:1.3;
+}
+.edu-sch{font-size:.82rem;color:var(--muted);line-height:1.5;margin-bottom:.8rem;}
+.edu-score{
+  font-family:'Space Mono',monospace;
+  font-size:1.4rem;
+  color:var(--fg);
+  font-weight:700;
+}
+
+/* EXPERIENCE */
+#experience{background:var(--bg);}
+.exp-list{display:flex;flex-direction:column;}
+.exp-row{
+  display:grid;
+  grid-template-columns:220px 1fr auto;
+  gap:3rem;
+  align-items:start;
+  padding:2.5rem 0;
+  border-bottom:1px solid var(--dim);
+  transition:background .25s;
+  position:relative;
+}
+.exp-row:hover{background:rgba(255,255,255,.02);}
+.exp-row:first-child{border-top:1px solid var(--dim);}
+.exp-num{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:3.5rem;
+  color:rgba(255,255,255,.06);
+  line-height:1;
+  pointer-events:none;
+}
+.exp-left{}
+.exp-badge2{
+  display:inline-block;
+  font-size:.62rem;
+  font-family:'Space Mono',monospace;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  padding:.2rem .6rem;
+  border-radius:3px;
+  margin-bottom:.6rem;
+}
+.exp-badge2.now{background:rgba(61,255,192,.12);color:var(--mint);}
+.exp-badge2.done{background:rgba(255,255,255,.06);color:var(--muted);}
+.exp-title{
+  font-family:'DM Serif Display',serif;
+  font-size:1.4rem;
+  color:var(--fg);
+  margin-bottom:.25rem;
+  line-height:1.2;
+}
+.exp-co{font-size:.8rem;color:var(--muted);margin-bottom:1rem;letter-spacing:.05em;}
+.exp-period{
+  font-family:'Space Mono',monospace;
+  font-size:.65rem;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  text-align:right;
+  padding-top:.5rem;
+}
+.exp-body{font-size:.88rem;line-height:1.8;color:#aaa;}
+.exp-body .rac-result{color:var(--mint);font-weight:600;}
+.exp-body .rac-action{color:var(--fg);}
+.exp-body .rac-context{color:var(--muted);}
+
+/* PROJECTS */
+#projects{background:#0D0D0D;}
+.proj-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:1px;
+  border:1px solid var(--dim);
+}
+.proj-card{
+  padding:3rem;
+  position:relative;
+  overflow:hidden;
+  transition:background .3s;
+  border-right:1px solid var(--dim);
+  border-bottom:1px solid var(--dim);
+}
+.proj-card:nth-child(2n){border-right:none;}
+.proj-card:nth-last-child(-n+2){border-bottom:none;}
+.proj-card:hover{background:rgba(255,255,255,.03);}
+.proj-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;
+  height:2px;
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .5s ease;
+}
+.proj-card:hover::before{transform:scaleX(1);}
+.proj-card.c1::before{background:var(--pink);}
+.proj-card.c2::before{background:var(--yellow);}
+.proj-card.c3::before{background:var(--mint);}
+.proj-card.c4::before{background:var(--pink);}
+.proj-card.c5::before{background:var(--yellow);}
+.proj-card.c6::before{background:var(--mint);}
+.proj-card.c7::before{background:var(--pink);}
+.proj-card.c8::before{background:var(--yellow);}
+.proj-num2{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:5rem;
+  color:rgba(255,255,255,.04);
+  line-height:1;
+  margin-bottom:.5rem;
+}
+.proj-type2{
+  font-family:'Space Mono',monospace;
+  font-size:.62rem;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:.6rem;
+}
+.proj-name2{
+  font-family:'DM Serif Display',serif;
+  font-size:1.5rem;
+  color:var(--fg);
+  margin-bottom:1rem;
+  line-height:1.2;
+}
+.proj-desc2{font-size:.84rem;line-height:1.75;color:#999;}
+.proj-tag2{
+  display:inline-block;
+  margin-top:1.2rem;
+  font-size:.65rem;
+  font-family:'Space Mono',monospace;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  padding:.3rem .75rem;
+  border-radius:3px;
+  border:1px solid var(--dim);
+  color:var(--muted);
+}
+
+/* POR */
+#por{background:var(--bg);}
+.por-list{display:flex;flex-direction:column;gap:0;}
+.por-item{
+  display:grid;
+  grid-template-columns:60px 1fr;
+  gap:2rem;
+  padding:2rem 0;
+  border-bottom:1px solid var(--dim);
+  align-items:start;
+}
+.por-item:first-child{border-top:1px solid var(--dim);}
+.por-arrow{
+  font-size:1.5rem;
+  color:var(--dim);
+  transition:color .2s,transform .2s;
+  padding-top:.2rem;
+}
+.por-item:hover .por-arrow{color:var(--pink);transform:translate(4px,-4px);}
+.por-role2{
+  font-family:'DM Serif Display',serif;
+  font-size:1.2rem;
+  color:var(--fg);
+  margin-bottom:.2rem;
+}
+.por-org2{font-size:.78rem;color:var(--muted);margin-bottom:.75rem;letter-spacing:.04em;}
+.por-text{font-size:.84rem;color:#888;line-height:1.75;}
+
+/* ACHIEVEMENTS */
+#achievements{background:#0D0D0D;}
+.ach-list{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  border:1px solid var(--dim);
+}
+.ach-box{
+  padding:2rem;
+  border-right:1px solid var(--dim);
+  border-bottom:1px solid var(--dim);
+  transition:background .3s;
+}
+.ach-box:hover{background:rgba(245,230,66,.03);}
+.ach-box:nth-child(3n){border-right:none;}
+.ach-icon2{
+  font-size:1.3rem;
+  margin-bottom:.75rem;
+  display:block;
+}
+.ach-head{
+  font-size:.9rem;
+  font-weight:700;
+  color:var(--fg);
+  margin-bottom:.25rem;
+  line-height:1.4;
+}
+.ach-sub2{font-size:.75rem;color:var(--muted);}
+
+/* EXTRACURRICULAR */
+#extra{background:var(--bg);}
+.extra-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:1.5rem;
+}
+.extra-card{
+  border:1px solid var(--dim);
+  padding:2rem;
+  border-radius:4px;
+  transition:border-color .3s,transform .3s;
+}
+.extra-card:hover{border-color:var(--pink);transform:translateY(-4px);}
+.extra-icon{font-size:1.5rem;display:block;margin-bottom:.75rem;}
+.extra-name{font-size:.9rem;font-weight:700;color:var(--fg);margin-bottom:.3rem;}
+.extra-note{font-size:.78rem;color:var(--muted);line-height:1.6;}
+
+/* SKILLS */
+#skills{background:#0D0D0D;}
+.skills-wrap{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4rem;
+}
+.sk-group{margin-bottom:2.5rem;}
+.sk-group-title{
+  font-family:'Space Mono',monospace;
+  font-size:.62rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:1rem;
+}
+.sk-pills{display:flex;flex-wrap:wrap;gap:.5rem;}
+.sk-pill{
+  padding:.4rem 1rem;
+  border:1px solid var(--dim);
+  border-radius:3px;
+  font-size:.78rem;
+  color:#ccc;
+  transition:border-color .2s,color .2s;
+}
+.sk-pill:hover{border-color:var(--pink);color:var(--pink);}
+.cert-rows{display:flex;flex-direction:column;gap:.75rem;}
+.cert-row{
+  display:flex;
+  align-items:flex-start;
+  gap:1rem;
+  padding:1rem;
+  border:1px solid var(--dim);
+  border-radius:4px;
+  transition:border-color .3s;
+}
+.cert-row:hover{border-color:var(--mint);}
+.cert-dot2{
+  width:6px;height:6px;
+  background:var(--mint);
+  border-radius:50%;
+  flex-shrink:0;
+  margin-top:5px;
+}
+.cert-n{font-size:.85rem;font-weight:700;color:var(--fg);margin-bottom:.15rem;}
+.cert-d{font-size:.72rem;color:var(--muted);}
+
+/* CONTACT */
+#contact{
+  min-height:70vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  text-align:center;
+  background:var(--bg);
+  border-top:1px solid var(--dim);
+  position:relative;
+  overflow:hidden;
+}
+.contact-giant{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(4rem,12vw,11rem);
+  line-height:.85;
+  -webkit-text-stroke:1px rgba(240,237,230,.15);
+  color:transparent;
+  pointer-events:none;
+  user-select:none;
+  margin-bottom:3rem;
+}
+.contact-email{
+  display:inline-block;
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(1.5rem,3vw,2.5rem);
+  color:var(--fg);
+  text-decoration:none;
+  border-bottom:1px solid var(--pink);
+  padding-bottom:.3rem;
+  transition:color .2s;
+}
+.contact-email:hover{color:var(--pink);}
+.contact-links2{
+  display:flex;justify-content:center;gap:2rem;margin-top:2.5rem;flex-wrap:wrap;
+}
+.c-link{
+  font-size:.72rem;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  font-family:'Space Mono',monospace;
+  color:var(--muted);
+  text-decoration:none;
+  border-bottom:1px solid var(--dim);
+  padding-bottom:.2rem;
+  transition:color .2s,border-color .2s;
+}
+.c-link:hover{color:var(--fg);border-color:var(--fg);}
+
+footer{
+  text-align:center;
+  padding:2rem;
+  font-family:'Space Mono',monospace;
+  font-size:.6rem;
+  color:var(--dim);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  border-top:1px solid var(--dim);
+}
+
+/* REVEAL */
+.rev{opacity:0;transform:translateY(40px);transition:opacity .7s ease,transform .7s ease;}
+.rev.in{opacity:1;transform:translateY(0);}
+.rev-left{opacity:0;transform:translateX(-30px);transition:opacity .6s ease,transform .6s ease;}
+.rev-left.in{opacity:1;transform:translateX(0);}
+
+@media(max-width:768px){
+  nav{padding:1.2rem 1.5rem;}
+  #hero{padding:0 1.5rem 3rem;}
+  section{padding:5rem 1.5rem;}
+  .hero-top-bar{left:1.5rem;right:1.5rem;}
+  .exp-row{grid-template-columns:1fr;gap:1rem;}
+  .exp-num{display:none;}
+  .proj-grid{grid-template-columns:1fr;}
+  .proj-card:nth-child(2n){border-right:1px solid var(--dim);}
+  .ach-list{grid-template-columns:1fr 1fr;}
+  .skills-wrap{grid-template-columns:1fr;}
+  nav ul{display:none;}
+}
+</style>
+</head>
+<body>
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-name">Pushti</a>
+  <ul>
+    <li><a href="#experience">Work</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#achievements">Wins</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-blob blob1"></div>
+  <div class="hero-blob blob2"></div>
+
+  <div class="hero-top-bar">
+    <div class="hero-role">Strategy · Entrepreneurship · Content</div>
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="hero-scroll-line"></div>
+    </div>
+  </div>
+
+  <div class="hero-desc">
+    <strong>IIM Jammu + NCU Taiwan.</strong><br>
+    Builder of ideas, breaker of comfort zones,<br>national netball player, and chronic<br>overachiever.
+  </div>
+
+  <div class="hero-giant">
+    <div>PUSHTI</div>
+    <div><span class="outline">MER</span><span class="pink">.</span></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>Strategy</span><span class="hi">★</span>
+    <span>Entrepreneurship</span><span class="hi">★</span>
+    <span>Content Creation</span><span class="hi">★</span>
+    <span>Financial Modelling</span><span class="hi">★</span>
+    <span>Vibe Coding</span><span class="hi">★</span>
+    <span>Debating</span><span class="hi">★</span>
+    <span>Product Building</span><span class="hi">★</span>
+    <span>EdTech</span><span class="hi">★</span>
+    <span>Strategy</span><span class="hi">★</span>
+    <span>Entrepreneurship</span><span class="hi">★</span>
+    <span>Content Creation</span><span class="hi">★</span>
+    <span>Financial Modelling</span><span class="hi">★</span>
+    <span>Vibe Coding</span><span class="hi">★</span>
+    <span>Debating</span><span class="hi">★</span>
+    <span>Product Building</span><span class="hi">★</span>
+    <span>EdTech</span><span class="hi">★</span>
+  </div>
+</div>
+
+<!-- EDUCATION -->
+<section id="education">
+  <p class="s-label rev">Education</p>
+  <h2 class="s-title rev">Where I was <em>shaped.</em></h2>
+  <div class="edu-grid">
+    <div class="edu-cell rev" data-year="2026">
+      <span class="edu-tag">Exchange 2026</span>
+      <p class="edu-deg">BBA — Exchange Program</p>
+      <p class="edu-sch">National Central University, Taiwan</p>
+    </div>
+    <div class="edu-cell rev" data-year="2024">
+      <span class="edu-tag">2024 — Ongoing</span>
+      <p class="edu-deg">BBA + MBA (IPM)</p>
+      <p class="edu-sch">Indian Institute of Management, Jammu</p>
+      <p class="edu-score">7.3 CGPA</p>
+    </div>
+    <div class="edu-cell rev" data-year="2024">
+      <span class="edu-tag">Class XII · 2024</span>
+      <p class="edu-deg">HSC — Commerce</p>
+      <p class="edu-sch">Narsee Monjee College of Commerce and Economics</p>
+      <p class="edu-score">93.17%</p>
+    </div>
+    <div class="edu-cell rev" data-year="2022">
+      <span class="edu-tag">Class X · 2022</span>
+      <p class="edu-deg">SSC</p>
+      <p class="edu-sch">Nishu Nursery and Kothari Convent</p>
+      <p class="edu-score">97.00%</p>
+    </div>
+  </div>
+  <p style="font-size:.78rem;color:var(--muted);margin-top:1.5rem;font-family:'Space Mono',monospace;">
+    Also cleared CA Foundation — 1st Distinction (passing rate below 14%), ICAI
+  </p>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <p class="s-label rev">Work</p>
+  <h2 class="s-title rev">What I have <em>built.</em></h2>
+  <div class="exp-list">
+
+    <div class="exp-row rev">
+      <div>
+        <p class="exp-num">01</p>
+      </div>
+      <div class="exp-left">
+        <span class="exp-badge2 now">Currently Here</span>
+        <p class="exp-title">Media Lead</p>
+        <p class="exp-co">Growth Sense Group</p>
+        <p class="exp-body">
+          <span class="rac-result">Grew Growth Sense News into an active startup media vertical</span>
+          <span class="rac-action"> by taking end-to-end ownership of content strategy, podcast coordination, editorial planning, and cross-platform publishing</span>
+          <span class="rac-context"> — managing the media arm of a growing venture ecosystem platform as the sole editorial head, covering startups, founders, and the Indian VC landscape.</span>
+        </p>
+      </div>
+      <p class="exp-period">Feb 2026 — Present</p>
+    </div>
+
+    <div class="exp-row rev">
+      <div>
+        <p class="exp-num">02</p>
+      </div>
+      <div class="exp-left">
+        <span class="exp-badge2 done">Completed</span>
+        <p class="exp-title">CXO Office Intern — Strategy and Consulting</p>
+        <p class="exp-co">BlueStone Jewellery and Lifestyle</p>
+        <p class="exp-body">
+          <span class="rac-result">Delivered two implementation-ready consulting outputs directly to CXO-level leadership</span>
+          <span class="rac-action"> by conducting structured analysis and building strategic frameworks across an operational efficiency project and a new product launch initiative</span>
+          <span class="rac-context"> — embedded in the CXO office of one of India's leading D2C jewellery brands, operating with full exposure to senior decision-making.</span>
+        </p>
+      </div>
+      <p class="exp-period">Dec 2025 — Feb 2026</p>
+    </div>
+
+    <div class="exp-row rev">
+      <div>
+        <p class="exp-num">03</p>
+      </div>
+      <div class="exp-left">
+        <span class="exp-badge2 done">Best Intern Award</span>
+        <p class="exp-title">Finance Intern</p>
+        <p class="exp-co">Kotak Education Foundation</p>
+        <p class="exp-body">
+          <span class="rac-result">Recognised as Best Intern out of the cohort</span>
+          <span class="rac-action"> by maintaining zero-error financial records and standardising accounting processes across multiple departments</span>
+          <span class="rac-context"> — contributing to the financial operations of a non-profit education foundation managing disbursements and grants across India.</span>
+        </p>
+      </div>
+      <p class="exp-period">Nov 2025 — Dec 2025</p>
+    </div>
+
+    <div class="exp-row rev">
+      <div>
+        <p class="exp-num">04</p>
+      </div>
+      <div class="exp-left">
+        <span class="exp-badge2 done">Completed</span>
+        <p class="exp-title">Public Relations Intern</p>
+        <p class="exp-co">SOCH — Ant Hi Aarambh (NGO)</p>
+        <p class="exp-body">
+          <span class="rac-result">Expanded the NGO's donor network and strengthened stakeholder relationships</span>
+          <span class="rac-action"> by managing outreach communications, producing PR materials, and supporting fundraising campaigns across 8 weeks</span>
+          <span class="rac-context"> — working with a grassroots social impact organisation to amplify its community reach and visibility.</span>
+        </p>
+      </div>
+      <p class="exp-period">2023 · 8 Weeks</p>
+    </div>
+
+    <div class="exp-row rev">
+      <div>
+        <p class="exp-num">05</p>
+      </div>
+      <div class="exp-left">
+        <span class="exp-badge2 done">Completed</span>
+        <p class="exp-title">Content Writer Intern</p>
+        <p class="exp-co">Pehchaan — The Street School (Trust)</p>
+        <p class="exp-body">
+          <span class="rac-result">Increased the trust's digital storytelling output across social media and blog channels</span>
+          <span class="rac-action"> by writing impact-driven content on street education initiatives across multiple formats — social captions, long-form blogs, and awareness pieces</span>
+          <span class="rac-context"> — supporting an education non-profit working to bring schooling to underprivileged children on the streets of India.</span>
+        </p>
+      </div>
+      <p class="exp-period">2023 · 4 Weeks</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <p class="s-label rev">Projects</p>
+  <h2 class="s-title rev">Things I <em>made.</em></h2>
+  <div class="proj-grid">
+
+    <div class="proj-card c1 rev">
+      <p class="proj-num2">01</p>
+      <p class="proj-type2">Vibe-Coded App</p>
+      <p class="proj-name2">TalkBridge</p>
+      <p class="proj-desc2">
+        Built a situational offline phrasebook app after experiencing the daily friction of communicating in Taiwan without Mandarin. Instead of live translation, TalkBridge offers pre-saved, situation-specific phrases with instant translations that work fully offline — designed for tourists, exchange students, and solo travellers navigating unfamiliar language environments.
+      </p>
+      <span class="proj-tag2">Offline-first · Language</span>
+    </div>
+
+    <div class="proj-card c2 rev">
+      <p class="proj-num2">02</p>
+      <p class="proj-type2">AI Tool</p>
+      <p class="proj-name2">VARC Sprint</p>
+      <p class="proj-desc2">
+        Built an AI agent to solve a personal problem: finding fresh, relevant reading comprehension passages for daily practice is tedious. VARC Sprint generates new passages on demand based on user-defined topics and difficulty levels — making consistent verbal ability practice accessible for entrance exam aspirants without hunting for material every day.
+      </p>
+      <span class="proj-tag2">AI-powered · EdTech</span>
+    </div>
+
+    <div class="proj-card c3 rev">
+      <p class="proj-num2">03</p>
+      <p class="proj-type2">Government Proposal — EdTech</p>
+      <p class="proj-name2">SkillQuest</p>
+      <p class="proj-desc2">
+        Designed a gamified skill development platform for Taiwan's youth to address SDG4 (Quality Education). Inspired by Taiwan's receipt lottery culture, SkillQuest gives learners lottery entries proportional to their skill progress — converting an existing national habit into a learning incentive that benefits unprivileged youth most. Built as an academic proposal for the Taiwan government.
+      </p>
+      <span class="proj-tag2">SDG4 · Gamification · Government</span>
+    </div>
+
+    <div class="proj-card c4 rev">
+      <p class="proj-num2">04</p>
+      <p class="proj-type2">Academic Project — Branding</p>
+      <p class="proj-name2">Jewellery Store Revival, Jammu</p>
+      <p class="proj-desc2">
+        Conducted in-depth stakeholder research across the owner, craftsmen, workers, and prospective customers to diagnose why a local jewellery store was losing relevance with younger audiences. Delivered a complete digital branding overhaul including a website, Instagram presence, and full brand kit — repositioning a legacy business for digital-first consumers.
+      </p>
+      <span class="proj-tag2">Branding · Research · Digital Strategy</span>
+    </div>
+
+    <div class="proj-card c5 rev">
+      <p class="proj-num2">05</p>
+      <p class="proj-type2">Academic Project — Finance</p>
+      <p class="proj-name2">TCS Fundamental Analysis</p>
+      <p class="proj-desc2">
+        Built a bottom-up fundamental model for Tata Consultancy Services using multi-year financial statements. Analysed revenue drivers, segment performance, and margin trends to assess business health and construct a reasoned view on future performance — structured as an independent equity research exercise.
+      </p>
+      <span class="proj-tag2">Financial Modelling · Equity Research</span>
+    </div>
+
+    <div class="proj-card c6 rev">
+      <p class="proj-num2">06</p>
+      <p class="proj-type2">Academic Project — Operations</p>
+      <p class="proj-name2">Monte Carlo Simulation — Domino's</p>
+      <p class="proj-desc2">
+        Simulated the full operational flow of a Domino's outlet using Monte Carlo methods — modelling order volumes, service times, and throughput variability to surface operational bottlenecks. Translated simulation outputs into concrete business strategy recommendations for staffing and service optimisation at the analysed stores.
+      </p>
+      <span class="proj-tag2">Operations · Simulation · Strategy</span>
+    </div>
+
+    <div class="proj-card c7 rev">
+      <p class="proj-num2">07</p>
+      <p class="proj-type2">Blueprint — Platform Design</p>
+      <p class="proj-name2">Networq</p>
+      <p class="proj-desc2">
+        Designed the full product blueprint for a niche professional networking and student collaboration platform targeting the management education ecosystem across India. Developed the feature architecture, value proposition, and onboarding framework — received strong academic recognition and is currently at a documented prototype stage.
+      </p>
+      <span class="proj-tag2">Product Design · Strategy</span>
+    </div>
+
+    <div class="proj-card c8 rev">
+      <p class="proj-num2">08</p>
+      <p class="proj-type2">Hult Prize — Sustainability</p>
+      <p class="proj-name2">Circular Clothing Rental Platform</p>
+      <p class="proj-desc2">
+        Developed a peer-to-peer clothing rental platform for the Hult Prize OnCampus competition at IIM Jammu, targeting occasion-wear waste and affordability gaps. Modelled the unit economics, adoption strategy, and community-level behaviour change required to make circular fashion viable at scale.
+      </p>
+      <span class="proj-tag2">Sustainability · Circular Economy</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- POR -->
+<section id="por">
+  <p class="s-label rev">Leadership</p>
+  <h2 class="s-title rev">Positions of <em>Responsibility.</em></h2>
+  <div class="por-list">
+
+    <div class="por-item rev">
+      <div class="por-arrow">↗</div>
+      <div>
+        <p class="por-role2">Coordinator — Industry Interaction Cell</p>
+        <p class="por-org2">IIM Jammu</p>
+        <p class="por-text">Built a network of 1,000+ industry leaders through targeted outreach and secured speakers and panellists for high-impact summits and conclaves — leading flagship institutional events including Round Table Conferences, Across the Wave, and NavSamvaads that bridged industry and academia at scale.</p>
+      </div>
+    </div>
+
+    <div class="por-item rev">
+      <div class="por-arrow">↗</div>
+      <div>
+        <p class="por-role2">Member — Debating Society</p>
+        <p class="por-org2">IIM Jammu</p>
+        <p class="por-text">Led debate workshops on argumentation, rebuttals, and critical reasoning for the student cohort — ranked top 10 out of 500+ participants at MUN 1.0. Facilitated structured intellectual debates that built a culture of rigorous thinking across the batch.</p>
+      </div>
+    </div>
+
+    <div class="por-item rev">
+      <div class="por-arrow">↗</div>
+      <div>
+        <p class="por-role2">Member — Matrix, AI and Business Analytics Club</p>
+        <p class="por-org2">IIM Jammu</p>
+        <p class="por-text">Coordinated with professional institutes to deliver certifications and real-world analytics experiences. Organised simulation games, Unstop competitions, and analytics projects to build practical data skills across the student body.</p>
+      </div>
+    </div>
+
+    <div class="por-item rev">
+      <div class="por-arrow">↗</div>
+      <div>
+        <p class="por-role2">Member — Arithmos, Business Strategy Cell</p>
+        <p class="por-org2">Narsee Monjee College of Commerce and Economics, Mumbai</p>
+        <p class="por-text">Contributed to organising one of Mumbai's largest business events as part of the Arithmos team — managing event logistics, participant coordination, and on-ground execution for a flagship inter-college competition that drew students from across the city.</p>
+      </div>
+    </div>
+
+    <div class="por-item rev">
+      <div class="por-arrow">↗</div>
+      <div>
+        <p class="por-role2">Head of Department — Finance and Investment Cell Jr.</p>
+        <p class="por-org2">Narsee Monjee College of Commerce and Economics</p>
+        <p class="por-text">Led a team that planned and executed financial literacy workshops, simulated investment challenges, and interactive sessions with finance professionals — giving students hands-on exposure to capital markets and investment thinking from their first year of college.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements">
+  <p class="s-label rev">Recognition</p>
+  <h2 class="s-title rev">The wins that <em>matter.</em></h2>
+  <div class="ach-list">
+    <div class="ach-box rev">
+      <span class="ach-icon2">🏆</span>
+      <p class="ach-head">National Case Competition Finalist</p>
+      <p class="ach-sub2">Top 10 out of 700+ teams — Financial Markets Strategy Model</p>
+    </div>
+    <div class="ach-box rev">
+      <span class="ach-icon2">🥇</span>
+      <p class="ach-head">1st Place — Dharohar Case Competition</p>
+      <p class="ach-sub2">IIM Jammu</p>
+    </div>
+    <div class="ach-box rev">
+      <span class="ach-icon2">🥈</span>
+      <p class="ach-head">2nd Place — VisionCraft</p>
+      <p class="ach-sub2">Entrepreneurship Development Cell, IIM Jammu</p>
+    </div>
+    <div class="ach-box rev">
+      <span class="ach-icon2">📈</span>
+      <p class="ach-head">99th Percentile — JIPMAT</p>
+      <p class="ach-sub2">Secured admission to IIM Jammu from 100,000+ test takers</p>
+    </div>
+    <div class="ach-box rev">
+      <span class="ach-icon2">🎖️</span>
+      <p class="ach-head">1st Distinction — CA Foundation</p>
+      <p class="ach-sub2">ICAI — national passing rate below 14%</p>
+    </div>
+    <div class="ach-box rev">
+      <span class="ach-icon2">💼</span>
+      <p class="ach-head">Best Intern Award</p>
+      <p class="ach-sub2">Kotak Education Foundation</p>
+    </div>
+    <div class="ach-box rev">
+      <span class="ach-icon2">🏸</span>
+      <p class="ach-head">National Netball Representative</p>
+      <p class="ach-sub2">Ranked 1st in university — competitive table tennis</p>
+    </div>
+    <div class="ach-box rev">
+      <span class="ach-icon2">📌</span>
+      <p class="ach-head">4th Rank — Equity Research Challenge</p>
+      <p class="ach-sub2">IIM Kashipur</p>
+    </div>
+    <div class="ach-box rev">
+      <span class="ach-icon2">🌐</span>
+      <p class="ach-head">200K+ LinkedIn Impressions</p>
+      <p class="ach-sub2">Organic reach on education, strategy, and productivity content</p>
+    </div>
+  </div>
+</section>
+
+<!-- EXTRACURRICULAR -->
+<section id="extra">
+  <p class="s-label rev">Beyond Work</p>
+  <h2 class="s-title rev">The rest of <em>me.</em></h2>
+  <div class="extra-grid">
+    <div class="extra-card rev">
+      <span class="extra-icon">🏸</span>
+      <p class="extra-name">National Netball Player</p>
+      <p class="extra-note">Represented at national level. Ranked 1st in university. Competitive table tennis participant at major inter-institutional tournaments.</p>
+    </div>
+    <div class="extra-card rev">
+      <span class="extra-icon">🎤</span>
+      <p class="extra-note">Represented Hon. Pralhad Joshi in the AIPPM committee at MUN 1.0, IIM Jammu — engaging in policy debate and political negotiation.</p>
+      <p class="extra-name">Model United Nations</p>
+    </div>
+    <div class="extra-card rev">
+      <span class="extra-icon">📊</span>
+      <p class="extra-name">National Business Competitions</p>
+      <p class="extra-note">Competed at IIT Madras (Fynergy), IIM Bangalore (Crown Jewel), BITS Pilani (ConsultFin'24), IIM Kashipur (Equity Research), and Shaheed Sukhdev College (Ascend).</p>
+    </div>
+    <div class="extra-card rev">
+      <span class="extra-icon">🧪</span>
+      <p class="extra-name">Science and Math Olympiads</p>
+      <p class="extra-note">Cleared Homi Bhabha Balvaidnyanik Competition, participated in International Mathematics Olympiad (SOF), and Science Meets through school years.</p>
+    </div>
+    <div class="extra-card rev">
+      <span class="extra-icon">✍️</span>
+      <p class="extra-name">Content Creation and LinkedIn</p>
+      <p class="extra-note">Sharing insights on education, strategy, and student life — building a genuine audience around ideas worth talking about.</p>
+    </div>
+    <div class="extra-card rev">
+      <span class="extra-icon">🌏</span>
+      <p class="extra-name">Exchange Student, Taiwan</p>
+      <p class="extra-note">Studying at National Central University, Taoyuan — navigating life across cultures, building global perspective, and accidentally becoming a better communicator.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <p class="s-label rev">Skills</p>
+  <h2 class="s-title rev">What I <em>bring.</em></h2>
+  <div class="skills-wrap">
+    <div>
+      <div class="sk-group rev">
+        <p class="sk-group-title">Technical</p>
+        <div class="sk-pills">
+          <span class="sk-pill">Financial Modelling</span>
+          <span class="sk-pill">MS Excel</span>
+          <span class="sk-pill">Data Analytics</span>
+          <span class="sk-pill">Generative AI</span>
+          <span class="sk-pill">Vibe Coding</span>
+          <span class="sk-pill">Canva</span>
+          <span class="sk-pill">MS PowerPoint</span>
+          <span class="sk-pill">CSS</span>
+          <span class="sk-pill">Research and Analysis</span>
+        </div>
+      </div>
+      <div class="sk-group rev">
+        <p class="sk-group-title">Soft Skills</p>
+        <div class="sk-pills">
+          <span class="sk-pill">Leadership</span>
+          <span class="sk-pill">Communication</span>
+          <span class="sk-pill">Argumentation</span>
+          <span class="sk-pill">Stakeholder Management</span>
+          <span class="sk-pill">Time Management</span>
+          <span class="sk-pill">Learning Agility</span>
+        </div>
+      </div>
+      <div class="sk-group rev">
+        <p class="sk-group-title">Interests</p>
+        <div class="sk-pills">
+          <span class="sk-pill">Startups</span>
+          <span class="sk-pill">EdTech</span>
+          <span class="sk-pill">Content Creation</span>
+          <span class="sk-pill">Sports</span>
+          <span class="sk-pill">Product Building</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="sk-group-title" style="margin-bottom:1rem;">Certifications</p>
+      <div class="cert-rows">
+        <div class="cert-row rev">
+          <div class="cert-dot2"></div>
+          <div>
+            <p class="cert-n">CA Foundation — 1st Distinction</p>
+            <p class="cert-d">ICAI — passing rate below 14%</p>
+          </div>
+        </div>
+        <div class="cert-row rev">
+          <div class="cert-dot2" style="background:var(--yellow);"></div>
+          <div>
+            <p class="cert-n">Microsoft Excel Proficiency</p>
+            <p class="cert-d">Data handling, analytics, financial modelling</p>
+          </div>
+        </div>
+        <div class="cert-row rev">
+          <div class="cert-dot2" style="background:var(--pink);"></div>
+          <div>
+            <p class="cert-n">Generative AI — Hands-On</p>
+            <p class="cert-d">Practical experience across 25+ AI tools</p>
+          </div>
+        </div>
+        <div class="cert-row rev">
+          <div class="cert-dot2" style="background:var(--fg);"></div>
+          <div>
+            <p class="cert-n">Deloitte Job Simulations (x2)</p>
+            <p class="cert-d">Data analytics tracks</p>
+          </div>
+        </div>
+        <div class="cert-row rev">
+          <div class="cert-dot2" style="background:var(--muted);"></div>
+          <div>
+            <p class="cert-n">Introduction to Data Science</p>
+            <p class="cert-d">Infosys</p>
+          </div>
+        </div>
+        <div class="cert-row rev">
+          <div class="cert-dot2" style="background:var(--pink);"></div>
+          <div>
+            <p class="cert-n">Young Professional</p>
+            <p class="cert-d">TCS iON Career Edge</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-giant">LET'S<br>TALK.</div>
+  <a href="mailto:pushtimm14@gmail.com" class="contact-email">pushtimm14@gmail.com</a>
+  <div class="contact-links2">
+    <a href="https://www.linkedin.com/in/pushti-mer" target="_blank" class="c-link">LinkedIn</a>
+    <a href="mailto:pushtimm14@gmail.com" class="c-link">Email</a>
+  </div>
+</section>
+
+<footer>Pushti Mer &nbsp;·&nbsp; 2026 &nbsp;·&nbsp; Built with intention</footer>
+
+<script>
+const cur=document.getElementById('cur');
+const ring=document.getElementById('cur-ring');
+let mx=window.innerWidth/2,my=window.innerHeight/2;
+let rx=mx,ry=my;
+
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+});
+
+function animRing(){
+  rx+=(mx-rx)*.1;ry+=(my-ry)*.1;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      const delay=Array.from(e.target.parentNode.children).indexOf(e.target)*.07;
+      e.target.style.transitionDelay=delay+'s';
+      e.target.classList.add('in');
+    }
+  });
+},{threshold:0.1});
+
+document.querySelectorAll('.rev,.rev-left').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
