@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JavaScript Object Properties</title>
+</head>
+<body>
+
+    <h2>Object Properties</h2>
+    <p id="properties"></p>
+
+    <h2>Object After Deleting Age</h2>
+    <p id="updatedObject"></p>
+
+    <script>
+        // Create object
+        var Person = {
+            firstName: "Tony",
+            lastName: "Lee",
+            age: 50,
+            eyeColor: "Blue"
+        };
+
+        // List all properties
+        let text = "";
+
+        for (let key in Person) {
+            text += key + " : " + Person[key] + "<br>";
+        }
+
+        document.getElementById("properties").innerHTML = text;
+
+        // Delete age property
+        delete Person.age;
+
+        // Print updated object
+        document.getElementById("updatedObject").innerHTML =
+            "firstName: " + Person.firstName + "<br>" +
+            "lastName: " + Person.lastName + "<br>" +
+            "eyeColor: " + Person.eyeColor;
+    </script>
+
+</body>
+</html>
